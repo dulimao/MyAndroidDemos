@@ -1,0 +1,7 @@
+MVP
+核心思想：将View层抽象成IView接口，将Presenter抽象成IPresenter接口，Mode还是原来的Mode
+优点：
+1、三层的职责更加明确且单一
+2、代码结构更加清晰，易于维护
+3、方便单元测试
+4、根除Activity的内存泄漏

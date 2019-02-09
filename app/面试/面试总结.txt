@@ -1,0 +1,178 @@
+1.性能优化
+  -- 内存泄漏优化:单例，非静态内部类的使用，handler，资源未关闭
+  -- 内存回收机制：某对象不再有任何引用的时候会进行垃圾回收
+     --可以作为GC ROOT引用点的有：JavaStack中引用的对象,方法区中静态引用和常亮引用指向的对象，Native方法中JNI引用的对象，活着的“Trehad”
+       检测内存泄漏方法：Android Profiler或adb shell dumpsys meminfo 包名 -d 查看内存快照
+                        LeakCanarey,MAT（Histogram,对比快照文件-list objec-->incoming refrence）工具
+
+     --如何解决内存泄漏
+  -- 内存溢出优化(OOM):
+  -- UI卡顿：16ms  -- 60fps
+     -- 布局优化,避免过于复杂
+     -- 过度绘制：同一像素区域被绘制多次
+     -- 复杂特效放在子线程绘制：SurfaceView，防止CPU和GPU负载过重
+     -- 避免频繁measure，layout
+     -- 避免频繁GC
+     -- 代码逻辑优化
+  -- View绘制原理
+
+
+2、Activity:与用户交互的接口
+   -- 状态：ruuning/paused/stoped/destoryed
+   -- 生命周期：
+      -- 启动：onCreate():创建，不可见 -》 onStart()：启动并可见，但是不可操作 -》 onResume():可见并可操作
+      -- 点击Home键返回主界面（不可见）：onPaused():可见，不可操作与onResume()对应 -> onStop()：不可见，内存不足时有可能被回收
+      -- 再次回到Activity:onRestart():不可见到可见 -》 onStart() -> onResume()
+      -- 退出Activity：onPause() -> onStop() -> onDestory():被销毁，资源释放等操作
+   -- 进程优先级：前台进程：与用户交互的Activity或与当前activity绑定的Service
+                 可见进程：可见但不可交互的Activity
+                 服务进程：后台开启的Service
+                 后台进程：按了Home键的Activity
+                 空进程：不属于前面任何一种，随时可能被Kill掉
+   -- 任务栈：一个APP可能有多个任务栈
+   -- 启动模式：standard,singletop,singletask,singleinstance
+   -- taskAffinal:
+   -- scheme跳转协议：H5跳转Activity页面
+3、Fragment:(第五大组件)
+   -- 加载到Activity的两种方式：
+      -- 静态加载：xml中以布局的方式
+      -- 动态加载：FragmentManager和FragmentTransaction的方式
+   -- FragemntPageAdapter和FragemntStatePageAdapter的区别：
+      -- FragemntPageAdapter:切换的时候只是将Activity和Fragemnt脱离开来（detach），并没有回收Fragment，适用于页面较少的情况
+      -- FragemntStatePageAdapter:每次切换的时候都会将Fragment remove掉以回收内存，所以更节省内存，适用于页面较多的情况
+   -- Fragemnt生命周期：见图
+   -- Fragment通信：
+      -- 在Fragment中调用Activity：getActivity();
+      -- 在Activity中调用Fragment：接口调用
+      -- Fragment调用Fragment中的方法：findFragmentById()
+   -- FragmentManager中方法：add() remove() replace()
+4、Service:可以在后台执行长时间任务而没有用户界面的组件，运行在主线程中，所以不能做耗时操作
+   -- Service和Tread的区别：两者没有任何关系，是两种截然不用的机制
+   -- 两种启动方式：
+      -- startService():和启动服务的调用者没有生命周期上的关系，onCreate()：只调用一次 --> onStartCommand():可能会多次调用,注意三个返回值的区别！！！  --> onDestory()
+      -- bindService():和绑定服务的调用者存在绑定关系，当调用者销毁时，服务会自动销毁，onCreate() -> onBind() -> onUnbind() -> onDestroy()
+5、BraodcastReceive:
+   -- 注册方式
+      -- 静态注册：注册完成够就一直运行，当APP或整个进程被杀死后，仍然可以接收到广播
+      -- 动态注册：生命周期跟随注册者，注册和解注册
+   -- 应用场景：同一APP中不同进程之间的组件消息同信，不同APP之间的组件之间的消息同信
+   -- 内部实现机制：见图
+   -- 本地广播：LocalBraodcastManager,只在APP内部通信,内部是通过Handler实现的
+6、WebView:
+   -- 一些坑：
+      -- AndroidAPI16及之前的版本存在远程代码执行安全漏洞，该漏洞源于程序没有正确限制WebView.addJavaScriptInterface(),远程攻击者可以通过该漏洞使用反射任意调用本地Java方法
+      -- WebView在销毁时先从父容器中移除，然后调用destroy()方法销毁
+      -- jsbridge:
+      -- webViewClient.onPageFinished存在很多坑，可以用后面的方法替换 -> WebChromClient.onProgressChange();
+      -- 后台耗电：webview会自己开启线程，所以要及时关闭不需要的webview
+      -- 硬件加速导致页面渲染问题，最好关闭webview的硬件加速
+   -- 内存泄漏：原因：WebView拥有自己独立的线程，不受Activity控制，当Activity销毁时，由于WebView持有Activity的引用，所以无法被回收
+      -- 独立进程：简单粗暴，不过存在进程间通信的问题
+      -- 动态添加：通过addView的方式，对传入WebView的Context做弱引用处理，当activity销毁时removeAllViews()
+7、Liunx内核：
+   -- 进程隔离/虚拟地址空间
+8、进程间通信：
+   -- Liunx中进程间通信方式：管道，Socket等
+   -- Android中进程间通信方式：Bunlde,Messenger,AIDL,Socket,共享文件，ContentProvider,Binder
+   -- Binder(粘合剂):跨进程通信机制
+      -- Android特有的进程间通信机制，较其他Linux通信方式，他的性能比较高，安全性高
+   -- Binder通信模型：Client：向ServiceManager查询相关服务,
+                     Service向ServiceManager注册自己,
+                     ServiceManager：Client和Service的桥梁,
+                     Binder驱动：运行在内核中，返回Server的代理对象，但是这个代理对象是没有实际功能的，只是包装Client的请求数据，通过内核空间传递数据，
+                     对Server来说Binder是Binder本地对象，对Client来说是Binder的代理对象
+9、Handler：Android消息机制的上层接口
+   -- 使用方法：postRunnable,sendMessage,获取消息方法：new Message(),Message.obtain()推荐使用
+   -- 机制（读源码）：见图 ThreadLocal（保存当前线程数据）
+   -- 内存泄漏：Handler持有Activity的匿名引用
+   -- 解决方法：弱引用，静态内部类继承Handler，移除callback
+10、AsyncTask:
+11、HandlerThread（看源码）:是一个Thread实现类，Handler + Looper + Thread,主线程给子线程发消息
+12、IntentService（看源码）:继承了Service的抽象类,执行高优先级的异步任务任务，内部有工作线程，用于处理耗时操作，封装了Handler和HandlerThread
+                  如果需要在后台做耗时操作，就不用自己用Service在里面开启线程了
+13、异步任务的实现方式：
+    -- Handler,HandlerThread,AsyncTask,IntentService
+14、View的绘制流程：
+    -- measure():ViewRoot开始测量，遍历View树，递归测量 measure() -> onMeasure() -> setMeasureDimension()
+                根据父View的MeasureSpec和子View的LayoutParams确定子View的MeasureSpec
+    -- layout():
+    -- draw():invalidate requestLayout
+15、View事件传递机制：PhoneWindow -> DecorView -> RootView -> ViewGroup -> View
+16、ListView和RecyclerView的区别：
+    -- ListView的RecycleBin机制：
+       -- RecyleBin:AbListView的内部类
+    -- convertView重用，ViewHolder避免findviewById()
+17、RecyclerView：
+18、ListView和RecyclerView的区别：
+    -- 缓存机制不同
+    -- RecyclerView支持局部刷新
+19、APP构建流程：见图
+    --jenkins:持续集成构建
+20、ANR:程序无响应，大多由于主线程中执行了耗时操作，导致主线程阻塞
+21、OOM:内存溢出，当前所占内存加上申请的内存超过了Dalvik虚拟机的最大内存限制
+    -- OOM解决：
+       -- BitMap优化
+       -- 及时释放内存
+       -- 图片压缩
+       -- inBitmap属性
+       -- 缓存的使用
+       -- 避免在onDraw()方法创建对象
+       -- 谨慎使用多进程
+    -- 内存溢出，内存抖动，内存泄漏
+22、内存溢出：无用的对象直接或间接的被GC Root引用
+23、LruCache:LinkedHashMap
+24、Bitmap:
+    -- 内存分区：java堆和Native区
+    -- LruCache:LinkedHashMap
+    -- 压缩：inSampleSize和inJustDecodeBounds,像素质量，质量压缩
+    -- recycle()方法：不用自己主动调用
+    -- 缩略图
+    -- 三级缓存
+25、内存管理：
+26、冷启动与热启动：
+    -- 冷启动：在启动前，系统中没有该应用的任何进程信息，启动流程见图
+    -- 优化：减少onCreate()的工作量
+            不要让Application参与业务操作
+            不要在Application中进行耗时操作
+            不要以静态变量的方式在Application中保存数据
+            布局的优化
+    -- 热启动：
+27、序列化方式：
+    -- Serializeable:是java的序列化方式，会产生大量临时变量导致内存抖动，同时有IO操作，效率较慢
+    -- Parcelable：是Android特有的序列化方式，效率高，但不能持久化数据到磁盘
+28、架构模式MVC,MVP,MVVM
+    -- MVC:是一种将业务逻辑和UI处理分离的设计模式，一般用于大的项目中，但是C中有即有C也有V，所以会造成耦合
+        -- M：业务逻辑
+        -- V：UI显示
+        -- C: Activity处理用户交互问题，中间桥梁
+    -- MVP:将MVC中的C和V进行解耦，取而代之的是P层，作为M和V层的中间人
+        -- M：业务逻辑和实体模型
+        -- V：Activity，负责View的绘制和用户交互
+        -- P：负责View和Model的交互
+    -- MVVM:
+        -- M:Model 实体模型
+        -- V:View 对应Activity和xml，负责UI绘制和用户交互
+        -- VM:ViewModel 负责业务逻辑处理，完成View和Model的交互
+29、插件化：65536、64K
+    -- 解决的问题：
+        -- 动态加载APK
+        -- 资源加载
+        -- 代码加载
+30、热更新：
+31、进程保活：
+32、Glide:
+    -- Glide工作流程：Model:数据源 --- (ModleLoader) --> Data -- (Decoder) --> Resource -- (Transform) -->
+        TransformedRecource -- (Transcode转码) --> TranscodeResource --> Target
+    -- width()：根据不同的上下文，创建对应的RequestManager,和当前组件的生命周进行绑定
+    -- load()：创建DrawableTypeRequest,并通过builder模式进行相关参数的配置
+    -- into():核心类是GenericRquestBuilder,构建Target --> into()  创建request并调用reqeust.begin()
+        -- ModelLoader -- DataFetcher(转换成不同的图片形式) --ResourceTranscoder：解码 -- Engine.load LruCache,弱引用
+    -- 线程池，缓存，handler，生命周期状态控制
+33、Picasso:
+    -- width():构建Picasso,利用单例模式创建Picasso,并决定下载策略，利用反射寻找当前项目是否集成Okhttp,如果没有则利用HttpUrlConnection下载
+34、APP启动流程：参考源码
+    -- 1:ActivityThread--> public static void main(String[] args)
+    -- 2:ServiceManager注册和获取ACTIVITY_SERVICE
+35、面向切面编程AOP：AOP就是把涉及到众多模块的某一类问题进行统一管理
+    -- 意义：解耦
+    -- 框架：AspectJ
