@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.example.myandroidproject.ndk.opengl_es.render.MyRender;
 import com.example.myandroidproject.ndk.opengl_es.render.PointerRender;
+import com.example.myandroidproject.ndk.opengl_es.render.TextureRender;
 
 public class Demo1Activity extends Activity {
 
@@ -15,7 +16,7 @@ public class Demo1Activity extends Activity {
         super.onCreate(savedInstanceState);
 
         MyGLSurfaceView surfaceView = new MyGLSurfaceView(this);
-        surfaceView.setRenderer(new PointerRender());
+        surfaceView.setRenderer(new TextureRender(this));
         surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         setContentView(surfaceView);
     }

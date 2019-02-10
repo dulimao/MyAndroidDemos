@@ -1,9 +1,9 @@
 package com.example.myandroidproject.ndk.opengl_es;
 /**
  *
-*@author 杜立茂
-* 2019/2/7 15:51
-* OpenGL：开放图形库，使用C语言开发的函数库,动画的本质就是坐标变换
+ *@author 杜立茂
+ * 2019/2/7 15:51
+ * OpenGL：开放图形库，使用C语言开发的函数库,动画的本质就是坐标变换
  *               OpenGLES:是OpenGL的一个子集，用于嵌入式系统
  *
  *
@@ -18,6 +18,20 @@ package com.example.myandroidproject.ndk.opengl_es;
  *              渲染模式：
  *                  持续渲染
  *                  脏渲染(命令渲染)
-*/
+ *              图元：
+ *                  点：
+ *                  线：
+ *                      线集
+ *                      线带
+ *                      线环
+ *                  三角形：
+ *                      集
+ *                      带(用的最多)
+ *                      扇面
+ *                  顶点着色模式：
+ *                      1.smooth平滑模式
+ *                      2.flat单调模式
+ *
+ */
 public class Main {
 }
