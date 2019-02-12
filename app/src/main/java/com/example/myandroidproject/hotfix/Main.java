@@ -14,16 +14,8 @@ import android.view.View;
 public class Main {
 
     public static void main(String[] args){
-        new MyAsyncTask().execute("url");
+
     }
 
 
-}
-
-class MyAsyncTask extends AsyncTask<String,Integer,Void>{
-
-    @Override
-    protected Void doInBackground(String... strings) {
-        return null;
-    }
 }
