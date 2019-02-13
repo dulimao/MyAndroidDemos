@@ -35,7 +35,7 @@
             <!--</intent-filter>-->
         <!--</activity>-->
 
-     <activity android:name=".hotfix.TestBugActivity">
+     <activity android:name=".screen_adapter.ScreenAdapteActivity">
          <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
          <category android:name="android.intent.category.LAUNCHER"/>
