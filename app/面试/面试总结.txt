@@ -81,11 +81,40 @@
                      ServiceManager：Client和Service的桥梁,
                      Binder驱动：运行在内核中，返回Server的代理对象，但是这个代理对象是没有实际功能的，只是包装Client的请求数据，通过内核空间传递数据，
                      对Server来说Binder是Binder本地对象，对Client来说是Binder的代理对象
+
+                                1.C/S架构
+                              * 2.Server向ServerManager注册自己，包括类名，方法名称的IBinder引用
+                              * 3.Client从ServverManager中查询并用反射创建相应服务，绑定服务端，根据返回的Binder,new一个Proxy对象，然后调用相应的方法
+                              * 4.通过序列化的方式，读写数据
+
+                              当前进程：
+                              ContextImpl->bindService()
+                              ->
+                              系统进程
+                              ActivityManagerNative.getDefault().bindService()
+                              ActivityManagerService->bindService()->publishService()
+
+                              ActivityThread:
+                              scheduleBindService->scheduleBindService
+
+
 9、Handler：Android消息机制的上层接口
    -- 使用方法：postRunnable,sendMessage,获取消息方法：new Message(),Message.obtain()推荐使用
    -- 机制（读源码）：见图 ThreadLocal（保存当前线程数据）
    -- 内存泄漏：Handler持有Activity的匿名引用
    -- 解决方法：弱引用，静态内部类继承Handler，移除callback
+
+   ActivityThread.main():程序的入口
+
+   Handler机制开始执行，开始Looop死循环
+
+   有系统Handler和自定义Handler两种
+   ThreadLocal:为了防止多线程访问同一变量，如Looper，而产生线程安全问题，
+   当前线程的ThreadLocalMap会单独将当前ThreadLocal和此变量的副本存储成一个键值对
+
+   一个线程只能有一个Looper,Handler通过当前线程和Looper关联
+
+
 10、AsyncTask:
 11、HandlerThread（看源码）:是一个Thread实现类，Handler + Looper + Thread,主线程给子线程发消息
 12、IntentService（看源码）:继承了Service的抽象类,执行高优先级的异步任务任务，内部有工作线程，用于处理耗时操作，封装了Handler和HandlerThread
