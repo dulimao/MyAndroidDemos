@@ -9,4 +9,27 @@
         android:layout_height="wrap_content"
         android:text="性能优化"
         android:onClick="testSingleton"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="内存抖动测试"
+            android:onClick="memeory_test"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CPU占用测试"
+            android:onClick="cpu_test"/>
+    </LinearLayout>
+
+
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

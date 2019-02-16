@@ -3,3 +3,17 @@
 763	1058	0	F:/MyAndroidProject/app/build/intermediates/cmake/debug/obj/x86/libnative-lib.so	5dfa1dd15360335a
 14	3751	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	d2fb65633b0a2266
 3751	4339	0	F:/MyAndroidProject/app/build/intermediates/cmake/debug/obj/x86/libnative-lib.so	5dfa1dd15360335a
+4	788	0	CMakeFiles/native-lib.dir/native-lib.cpp.o	d2fb65633b0a2266
+788	1438	0	F:/MyAndroidProject/app/build/intermediates/cmake/debug/obj/x86/libnative-lib.so	5dfa1dd15360335a
+28	189	0	CMakeFiles/pthread_demo.dir/pthread_demo.c.o	578b071a9445f97d
+189	825	0	F:/MyAndroidProject/app/build/intermediates/cmake/debug/obj/x86/libpthread_demo.so	c8af626696f0cb82
+4	168	0	CMakeFiles/pthread_demo.dir/pthread_demo.c.o	578b071a9445f97d
+168	344	0	F:/MyAndroidProject/app/build/intermediates/cmake/debug/obj/x86/libpthread_demo.so	c8af626696f0cb82
+3	244	0	F:/MyAndroidProject/app/build/intermediates/cmake/debug/obj/x86/libpthread_demo.so	c8af626696f0cb82
+5	200	0	CMakeFiles/pthread_demo.dir/pthread_demo.c.o	578b071a9445f97d
+200	394	0	F:/MyAndroidProject/app/build/intermediates/cmake/debug/obj/x86/libpthread_demo.so	c8af626696f0cb82
+4	299	0	CMakeFiles/pthread_demo.dir/pthread_demo.c.o	578b071a9445f97d
+3	96	0	F:/MyAndroidProject/app/build/intermediates/cmake/debug/obj/x86/libpthread_demo.so	c8af626696f0cb82
+48	990	0	CMakeFiles/pthread_demo.dir/pthread_demo.c.o	578b071a9445f97d
+991	1610	0	F:/MyAndroidProject/app/build/intermediates/cmake/debug/obj/x86/libpthread_demo.so	c8af626696f0cb82
+32	3079	0	F:/MyAndroidProject/app/build/intermediates/cmake/debug/obj/x86/libpthread_demo.so	c8af626696f0cb82

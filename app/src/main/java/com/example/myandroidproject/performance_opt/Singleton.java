@@ -5,6 +5,8 @@ import android.util.Log;
 
 import dalvik.system.BaseDexClassLoader;
 
+//单例造成内存泄漏
+
 public class Singleton {
 
     private Context mContext;
