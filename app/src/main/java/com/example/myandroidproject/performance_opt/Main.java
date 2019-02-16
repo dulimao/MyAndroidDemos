@@ -2,7 +2,13 @@ package com.example.myandroidproject.performance_opt;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+
+import com.example.myandroidproject.R;
 
 /**
 *@author 杜立茂
@@ -10,9 +16,25 @@ import android.util.Log;
 *@description 性能优化专题：
  *
 */
-public class Main {
+public class Main extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_performance_opt);
+        Log.e("Main","onCreate()");
+    }
 
 
+    public void testSingleton(View view){
+        Singleton.getInstance(this).print();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.e("Main","onDestroy()");
+    }
 
     private void test(Context context){
 

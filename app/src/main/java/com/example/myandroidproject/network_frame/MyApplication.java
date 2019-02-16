@@ -1,6 +1,10 @@
 package com.example.myandroidproject.network_frame;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
+
+import com.example.myandroidproject.hotfix.FixDexUtil;
 
 public class MyApplication extends Application {
     @Override
@@ -11,5 +15,10 @@ public class MyApplication extends Application {
         HttpProxy.init(new OkHttpProcessor());
     }
 
-
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        FixDexUtil.loadFixedDex(base);
+        MultiDex.install(base);
+    }
 }
