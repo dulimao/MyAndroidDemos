@@ -30,6 +30,7 @@ public class RXJavaActivity extends AppCompatActivity {
         mButton = this.findViewById(R.id.button);
         mImageView = this.findViewById(R.id.imageview);
         Test.test();
+        Test.test2(this);
        mButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
