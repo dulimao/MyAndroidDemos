@@ -17,7 +17,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".ndk.patch_update.UpdateActivity"></activity>
-        <activity android:name=".android_libray.rxjava2.RXJavaActivity" />
+        <!--<activity android:name=".android_libray.rxjava2.RXJavaActivity" />-->
         <activity android:name=".activity.MemoryAnalazy" />
         <activity android:name=".view.EventActivity" />
         <!--<activity android:name=".MainActivity">-->
@@ -35,7 +35,7 @@
             <!--</intent-filter>-->
         <!--</activity>-->
 
-     <activity android:name=".performance_opt.Main">
+     <activity android:name=".android_libray.rxjava2.RXJavaActivity">
          <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
          <category android:name="android.intent.category.LAUNCHER"/>

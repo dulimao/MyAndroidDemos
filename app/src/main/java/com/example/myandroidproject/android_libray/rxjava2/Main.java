@@ -26,9 +26,9 @@ public class Main {
     private static final String TAG = "Main";
     public static void main(String[] args) {
 
-//        Observable<String> observable = getObservable();
-//        Observer<String> observer = getObserver();
-//        observable.subscribe(observer);
+        Observable<String> observable = getObservable();
+        Observer<String> observer = getObserver();
+        observable.subscribe(observer);
 
 
 //        mapTest();
@@ -206,6 +206,7 @@ public class Main {
 
     //图片三级缓存
     public static void loadImage(){
+
         Observable<String> memoryObser = Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> e) throws Exception {
@@ -229,6 +230,7 @@ public class Main {
                 e.onComplete();
             }
         });
+
 
 
         Observable.concat(memoryObser,diskObser,networkObser).filter(new Predicate<String>() {
