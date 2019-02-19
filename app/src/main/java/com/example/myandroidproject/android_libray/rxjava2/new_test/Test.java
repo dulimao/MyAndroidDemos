@@ -23,7 +23,7 @@ public class Test {
                 subscrible.onNext("我是你想要的结果");
             }
             //观察者和订阅者进行订阅关联
-        }).subscribe(new Subscrible<String>() {
+        }).subscribleIO().subscribleMainThread().subscribe(new Subscrible<String>() {
             @Override
             public void onNext(String s) {
                 Log.i("Rxjava_Test","string：" + s);

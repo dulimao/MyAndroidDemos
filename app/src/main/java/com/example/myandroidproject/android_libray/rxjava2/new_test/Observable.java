@@ -1,9 +1,14 @@
 package com.example.myandroidproject.android_libray.rxjava2.new_test;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.example.myandroidproject.android_libray.rxjava2.new_test.map.Func1;
 import com.example.myandroidproject.android_libray.rxjava2.new_test.map.OnSubscribeLift;
 import com.example.myandroidproject.android_libray.rxjava2.new_test.map.Operator;
 import com.example.myandroidproject.android_libray.rxjava2.new_test.map.OperatorMap;
+import com.example.myandroidproject.android_libray.rxjava2.new_test.thread_switch.OnSubscribleMain;
+import com.example.myandroidproject.android_libray.rxjava2.new_test.thread_switch.OnSubscribleOnIO;
 
 //被观察者，
 public class Observable<T> {
@@ -32,6 +37,17 @@ public class Observable<T> {
 
     public <R> Observable<R> lift(OperatorMap<T,R> trOperator){
         return new Observable<>(new OnSubscribeLift(onSubscribe,trOperator));
+    }
+
+
+    //子线程切换线程切换
+    public Observable<T> subscribleIO(){
+        return create(new OnSubscribleOnIO<T>(this));
+    }
+
+    //主线程切换
+    public Observable<T> subscribleMainThread(){
+        return create(new OnSubscribleMain<T>(new Handler(Looper.getMainLooper()),this));
     }
 
 
