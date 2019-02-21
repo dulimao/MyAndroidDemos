@@ -29,8 +29,8 @@ public class RXJavaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_rxjava);
         mButton = this.findViewById(R.id.button);
         mImageView = this.findViewById(R.id.imageview);
-        Test.test();
-        Test.test2(this);
+        //Test.test();
+        //Test.test2(this);
        mButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
