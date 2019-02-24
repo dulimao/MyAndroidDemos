@@ -121,7 +121,7 @@
                   如果需要在后台做耗时操作，就不用自己用Service在里面开启线程了
 13、异步任务的实现方式：
     -- Handler,HandlerThread,AsyncTask,IntentService
-14、View的绘制流程：
+14、View的绘制流程：ViewRootImpl:doTranverls();
     -- measure():ViewRoot开始测量，遍历View树，递归测量 measure() -> onMeasure() -> setMeasureDimension()
                 根据父View的MeasureSpec和子View的LayoutParams确定子View的MeasureSpec
     -- layout():

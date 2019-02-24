@@ -46,7 +46,7 @@ public class Main{
 
 四大引用：
 StrongReference强引用：
-	回收时机：从不回收 使用：对象的一般保存  
+	回收时机：从不回收 使用：对象的一般保存
 	生命周期：JVM停止的时候才会终止
 SoftReference，软引用
 	回收时机：当内存不足的时候；
@@ -54,7 +54,7 @@ SoftReference，软引用
 	生命周期：内存不足时终止
 WeakReference，弱引用
 	回收时机：在垃圾回收的时候；
-	使用：同软引用； 
+	使用：同软引用；
 	生命周期：GC后终止
 PhatomReference 虚引用
 	回收时机：在垃圾回收的时候；
@@ -448,7 +448,255 @@ jstring Java_com_dlm_ndk_BitmapUtil_compressBitmap(
 	return env->NewStringUTF("1");
 }
 
+------------------数据传输效率优化---------------------
 
+传统序列化方式:Serializable/Parcelable
+json/xml/protocal-buffers/FlatBuffers
+Flatbuffers:
+1、基于二进制的文件，速度超快（json 1000ms,flatbuffer:0-5ms）
+json基于字符串的
+2、高效的内存使用和速度，使用过程中，不需要额外的内存，几乎接近原始数据
+在内存中的大小
+3、灵活，数据能能够前后兼容
+4、很少的代码侵入，使用少量的自动生成的代码即可实现（缺点）
+5、强数据类型，易于使用
+
+由描述文件和二进制文件组成
+
+
+
+--------------------安装包优化-----------------------
+
+aapt:打包工具
+
+1、图片压缩：
+--apk里面的资源图片，压缩图片，优化空间很小，主要取决于美工
+--svg图片：里面保存图片的一些描述，虽然文件很小，但是得牺牲CPU的计算能力，
+	使用时间换了空间，所以得权衡使用。
+	使用原则：简单的图片可以用svg，如图标。
+--webp:谷歌现在非常提倡使用的图片格式，保存图片比较小，
+	无损压缩比PNG文件小45%左右  iSparta在线图片转换工具
+	缺点：加载速度相比于PNG慢的很多，但是现在手机配置比较高，所以也无所谓了
+
+2、资源动态加载
+如：emoji表情，动态下载资源，而不是直接打包到apk里面
+一些模块的插件化动态添加。
+
+3、Lint工具（apk瘦身）
+	无用的布局，图片，string.xml中没有用的字符串
+
+4、极限压缩
+	7zZip压缩工具
+
+5、Progurad混淆压缩
+	可以删除注释和不用的代码
+	可以将java文件名改成短名a.java,b.java
+	方法名 a.b();
+	去除无用的import
+
+6、资源文件再压缩（重点：在常规的优化之外继续优化压缩）
+
+	在做“混淆”：要实现资源名称的修改，如 ic_launcher.png->a.png
+	甚至可以可以更夸张，res/drawable/ -> r/d
+
+
+
+------------------Service调优---------------------
+
+Service:是一个后台服务，专门用来处理常驻后台的工作组件
+
+即时通讯：service来做常驻后台的心跳传输
+良民：核心服务尽可能的轻（任务尽可能少）
+
+进程的优先级：
+1、前台进程 Foreground progress
+	用户正在交互的Activity
+	当某一个Service绑定正在交互的Activity
+	被主动调用为前台Service(startForground())
+	组件正在执行生命周期的回调（onCreate()/onStart()）
+	BroadcastReceiver正在执行onReceive()
+
+2、可见进程 Visible process
+	Activity处在onPause()（没有进入onStop()）
+	绑定到前台Activity的Service
+3、服务进程 Servicee process
+	startService()
+4、后台进程 Background process
+	对用户没有直接影响的进程，比如Activity处于onStop()的时候
+	设置单独进程：android:process":xxx"
+5、空进程 Empty process
+	什么都不做的进程（Android设计的为了第二次启动更快，采取的一个权衡）
+
+如何提高进程的优先级，尽量做到不轻易被系统杀死
+
+1、QQ采取在锁屏的时候启动一个1像素的Activity（故事：小米撕逼）
+Window window = getWindow();
+window.setGravity(Gravity.LEFT|Gravity.TOP);
+LayoutParams params = window.getAttributes();
+params.height = 1;
+params = 1;
+params.xxx =0;
+params = 0;
+
+
+//保持KeepOnePixcelActivity所在的进程不被干掉
+MainActivity.java -> startService() -> MyService.java -> registeReceiver()-> ScreenBraodcastReceive.java
+
+-> ACTION_SCREEN_ON/ACTION_SCREEN_OFF -> startActivity() -> KeppOnePixcleActivity.java
+
+//监听屏幕开启
+
+class KeepLievReceiver extends BraodcastReceiver{
+	String action = "";
+	public void onReceive(Intent intent){
+		action = intent.getAction();
+		if (action == Intent.ACTION_SCREEN_ON) {
+			//do something
+		}
+	}
+}
+
+2、app运营商和手机厂商可能有合作关系-白名单
+
+3、双进程守护：一个进程被杀死，另一进程又被他启动，项目监听启动（可以被手动强制退出）
+
+4.JobScheduler:代码见：performance_opt\keepliveprocess.zip（永远杀不死的）
+
+5、监听系统应用，然后启动自己
+
+6、利用账号同步机制唤醒进程 AccountManager
+
+7、NDK解决，Native进程来实现双进程守护
+
+8、等等
+
+总结：根据自己的需要来使用。
+
+A<--->B
+注意系统杀进程是一个一个杀的，本质是和杀进程时间赛跑
+使用AIDL进行进程间通信,接口定义语言
+LocalService:
+class LocalService extends Service{
+	MyBinder binder;
+	MyServiceConnection conn;
+	public IBinder onBind(Intent intent){
+		return binder;
+	}
+
+	public void onCreate(){
+		if (binder == null) {
+			binder = new MyBinder();
+		}
+		if (conn == null) {
+			conn = new MyServiceConnection();
+		}
+	}
+
+	public int onStartCommod(Intent intent){
+		bindService(RemoteService);
+		//把service设置为前台运行，避免手机系统自动杀掉服务
+		//注意：前提是要让用知道，所以需要弹出通知栏
+		Notification notificatioin = new Notification(R.drawable.ic_launcher,"hello I am 360",System.currenttime());
+		notificatioin.contentIntent = PendingIntent.getService(this,0,intent,0);
+		startForeground(startId,notificatioin);
+		return START_STICKY;
+	}
+
+	class MyBinder extends RemoteConnect.Stub{
+		public String getProcessName(){
+			return "LocalService";
+		}
+	}
+
+	class MyServiceConnection implements ServiceConnection{
+		public void onServiceConnected(ComponentName,IBinder service){
+			Log.i("RemoteService","建立连接成功");
+		}
+
+		public void onServiceDisconnected(ComponentName name){
+			Log.i("RemoteService","远程服务可能被干掉了，断开连接");
+			//启动被干掉的服务,并绑定
+			startService(RemoteService);
+			bindService(RemoteService);
+		}
+	}
+}
+
+RemoteService:
+class RemoteService extends Service{
+	。。。
+}
+AndroidMenifest:
+<service name = "RemoteService"
+	android:process =":remoteService"/>
+AIDL:
+package com.dlm.demo;
+interface RemoteConnect{
+	String getProcessName();
+}
+
+MainActivity:
+
+startService(LocalService.class);
+startService(RemoteService.class)
+
+
+-------------------应用启动速度优化和splash页面设计----------------
+1、启动方式
+	冷启动：直接从桌面上直接启动，同时后台没有该进程的缓存，
+		系统需要重新创建新的进程和分配资源。
+	热启动：该app后台有该进程的缓存，不需要重新分配资源。
+2、如何测量一个应用的启动时间
+	使用命令行启动app，同时开始时间测量，单位：毫秒
+	adb shell am start -W [packagename]/[package.MainActivity]
+
+	ThisTime 165:当前指定的activity启动时间
+	TotalTime 165：整个应用的启动时间，Application+Activity.
+	WaitTime 175:包括系统的影响时间，比上面的大。
+
+3、应用启动的流程
+	Application从构造方法开始 -> attachBaseContext() -> onCreate() ->
+	Activity构造方法 -> onCreate() -> setContentView 设置显示的界面布局
+	设置主题，背景等等属性 -> onStart() -> onResume() ->
+	显示里面的View(测量，布局，绘制，显示到界面上)
+
+问题：时间到底花在哪里了？
+	Application初始化+MainActivity的界面绘制时间
+
+4、如何减少应用的启动时间
+	(1)不要在Application的构造方法，attachBaseContext,onCreate()里面进行初始化的耗时炒作。
+	(2)由于用户只关心Activity最后显示的一帧,要求布局的层次要减少,
+	自定义控件要减少测量，布局，绘制的时间。
+	(3)SharedPreference的初始化的时候，需要将数据全部读取出来放到内存中
+		优化：尽可能减少sp文件数量（IO需要时间），像这样的初始化最好放到线程里面和懒加载
+
+	(4)因为MainActivity的页面绘制时间较长，所以使用SplashActivity作为欢迎页，
+	但是还是需要跳转到MainActivity，不能解决根本问题。
+
+耗时的问题：Application + Activity的启动时间及资源加载时间,预加载的数据花的时间。
+更好的优化：让这两个耗时操作重叠在一个时间段内并发地做这两个事情就节省了时间。
+解决办法：将SplashActivity和MainActivity合并为一个。
+		 一进来还是显示MainActivity，SplashActivity可以变成一个SplashFragment,
+		 然后放一个FrameLayout作为根布局，SplashFragment里面非常简单，就是显示一个图片，启动非常快。
+		 当SplashFragment显示完毕后再将它remove掉，同时在splash的2秒的欢迎时间内进行网络缓存，
+		 这个时候就直接显示MainActivity内容。
+		 存在的问题：SpalshView和ContentView加载放到了一起来做了，这可能会影响应用的启动时间。
+		 解决：可以用ViewStub延时加载MainActivity当中的View，这样可以尽可能减轻这种影响。
+ViewStub的设计就是为了防止MainActivity的启动加载资源太耗时了，延时进行加载，不影响启动，用户友好，
+但是他也需要时间加载：viewstub.inflate();
+
+5、如何设计延时加载DelayLoad:
+	不同的机型启动速度不一样，这个时间如何控制？
+	需要达到的效果：应用已经启动并完成加载，界面已经显示出来了，然后再去做其他的事情。
+	那问题来了，什么时候会加载完成？
+
+
+代码见：package:performance_opt.splash_fragment
+class SplashFragment extends Fragment{
+	public View onCreateView(inflater,container,bundle){
+		return new ImageView(this);
+	}
+}
 
 
 
@@ -457,7 +705,7 @@ jstring Java_com_dlm_ndk_BitmapUtil_compressBitmap(
 rxjava响应式编程：
 特点：
 	1：线程切换（异步），
-	2.事件变换（订阅者和发布者）
+	2.事件变换（String->Bitmap）
 	3.链式调度（避免了回调+嵌套）
 
 RxJava 有四个基本概念：
@@ -467,6 +715,17 @@ RxJava 有四个基本概念：
 	Subscribe (订阅)：Observable 和 Observer 通过 subscribe() 方法实现订阅关系，
 		创建了 Observable 和 Observer 之后，再用 subscribe() 方法将它们联结起来，整条链子就可以工作了
 	从而 Observable 可以在需要的时候发出事件来通知 Observer。
+
+线程切换：
+
+--Scheduler:线程调度器
+	--IOScheduler:子线程调度器
+	--HandlerScheduler:主线程调度器。
+--Work
+
+子线程->new Thread();
+主线程：Looper.getMainLoop();
+handler.postRunnable();
 
 
 
