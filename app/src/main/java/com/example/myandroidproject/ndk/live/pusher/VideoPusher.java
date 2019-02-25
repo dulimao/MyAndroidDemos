@@ -19,17 +19,19 @@ public class VideoPusher extends Pusher implements SurfaceHolder.Callback, Camer
     public VideoPusher(SurfaceHolder mSuraceHolder,VideoParams videoParams) {
         this.mSuraceHolder = mSuraceHolder;
         this.mVideoParams = videoParams;
-        this.mSuraceHolder.addCallback(this);
+        this. mSuraceHolder.addCallback(this);
     }
 
     @Override
     public void startPush() {
+        PushNative.setVideoOptions(mVideoParams.getPreviewWidth(),mVideoParams.getPreviewHeight(),
+                mVideoParams.getBitRate(),mVideoParams.getFps());
         startPreview();
     }
 
     @Override
     public void stopPush() {
-
+        stopPreview();
     }
 
 
@@ -83,6 +85,7 @@ public class VideoPusher extends Pusher implements SurfaceHolder.Callback, Camer
     public void onPreviewFrame(byte[] data, Camera camera) {
         if (camera != null) {
             camera.addCallbackBuffer(videoBuffer);
+            PushNative.fireVideo(data);
             Log.e("VideoPusher","视频数据" + data.length);
         }
     }
