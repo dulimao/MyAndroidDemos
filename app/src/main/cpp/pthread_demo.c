@@ -26,6 +26,7 @@ void* fun(void* arg)
     {
         LOGI("value: %s, i: %d",value,i);
         sleep(1);
+        goto end;
     }
     end:
     //解除关联

@@ -2,6 +2,8 @@ package com.example.myandroidproject.android_libray.retrofit;
 
 import android.app.Service;
 
+import org.greenrobot.eventbus.EventBus;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

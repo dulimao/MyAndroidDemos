@@ -31,6 +31,14 @@ package com.example.myandroidproject.ndk.opengl_es;
  *                  顶点着色模式：
  *                      1.smooth平滑模式
  *                      2.flat单调模式
+ *                  深度测试：Z轴
+ *                  深度缓冲区：深度值
+ *                  深度测试：启用Z轴被遮挡的物体看不见
+ *                  剔除：如果看不见的地方，告诉OopenGl不要渲染
+ *                  剪裁：不在整个ViewPort内渲染，指定一个剪裁区，在区域内渲染
+ *
+ *                  环绕：顶点的指定次序以及方向的组合
+ *
  *
  */
 public class Main {

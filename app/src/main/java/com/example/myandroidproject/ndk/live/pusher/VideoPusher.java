@@ -1,6 +1,7 @@
 package com.example.myandroidproject.ndk.live.pusher;
 
 
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -10,7 +11,7 @@ import com.example.myandroidproject.ndk.live.params.VideoParams;
 /**
  * 视频推流器
  */
-public class VideoPusher extends Pusher implements SurfaceHolder.Callback, Camera.PreviewCallback {
+public class VideoPusher extends Pusher implements Camera.PreviewCallback {
 
     private SurfaceHolder mSuraceHolder;
     private Camera mCamera;
@@ -19,7 +20,7 @@ public class VideoPusher extends Pusher implements SurfaceHolder.Callback, Camer
     public VideoPusher(SurfaceHolder mSuraceHolder,VideoParams videoParams) {
         this.mSuraceHolder = mSuraceHolder;
         this.mVideoParams = videoParams;
-        this. mSuraceHolder.addCallback(this);
+        //this. mSuraceHolder.addCallback(this);
     }
 
     @Override
@@ -35,22 +36,6 @@ public class VideoPusher extends Pusher implements SurfaceHolder.Callback, Camer
     }
 
 
-
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-
-    }
     byte[] videoBuffer;
     /**
      * 开始相机预览
@@ -59,6 +44,12 @@ public class VideoPusher extends Pusher implements SurfaceHolder.Callback, Camer
     private void startPreview() {
         try {
             mCamera = Camera.open(mVideoParams.getCameraID());
+            Camera.Parameters parameters = mCamera.getParameters();
+            //YUV 预览图像的像素格式
+            parameters.setPictureFormat(ImageFormat.NV21);
+            //预览图像的宽高分辨率
+            parameters.setPreviewSize(mVideoParams.getPreviewWidth(),mVideoParams.getPreviewHeight());
+            mCamera.setParameters(parameters);
             mCamera.setPreviewDisplay(mSuraceHolder);
 //            videoBuffer = new byte[mVideoParams.getPreviewWidth() * mVideoParams.getPreviewHeight() * 4];
             videoBuffer = new byte[3110400];

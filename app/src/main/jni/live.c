@@ -78,7 +78,7 @@ JNIEXPORT void JNICALL Java_com_example_myandroidproject_ndk_live_pusher_PushNat
 JNIEXPORT void JNICALL Java_com_example_myandroidproject_ndk_live_pusher_PushNative_fireVideo
         (JNIEnv *env, jclass jclazz, jbyteArray jdata)
 {
-
+    //NV21 -> YUV420P
 }
 
 JNIEXPORT void JNICALL Java_com_example_myandroidproject_ndk_live_pusher_PushNative_fireAudio
