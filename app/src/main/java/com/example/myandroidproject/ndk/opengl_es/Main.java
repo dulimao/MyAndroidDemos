@@ -40,6 +40,12 @@ package com.example.myandroidproject.ndk.opengl_es;
  *                  环绕：顶点的指定次序以及方向的组合
  *
  *
+ *                  OpenGL_ES教程：https://learnopengl-cn.github.io/#
+ *                  C++教程：https://www.learncpp.com/
+ *                  矩阵变换：https://mp.weixin.qq.com/s/con9UDxZ2tFuAw02uz3BsA
+ *                  OpenGL全流程详解：https://mp.weixin.qq.com/s/B4GxcNz9bybC6aUcnclVLw
+ *
+ *
  */
 public class Main {
 }
